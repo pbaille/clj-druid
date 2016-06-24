@@ -28,11 +28,26 @@
    :dimension s/Str
    :outputName s/Str})
 
+(declare dimensionSpec)
+
+(s/defschema listFiltered
+  {:type (s/enum :listFiltered)
+   :delegate dimensionSpec
+   :values [s/Str]
+   (s/optional-key :isWhiteList) s/Bool})
+
+(s/defschema regexFiltered
+  {:type (s/enum :listFiltered)
+   :delegate dimensionSpec
+   :pattern s/Str})
+
 (s/defschema dimensionSpec
   "define how dimension values get transformed prior to aggregation"
   (s/conditional
    #(= :default (:type %)) defaultDimension
    #(= :extraction (:type %)) extraction
+   #(= :listFiltered (:type %)) listFiltered
+   #(= :regexFiltered (:type %)) regexFiltered
    :else s/Str))
 
 (s/defschema orderByColumnSpec

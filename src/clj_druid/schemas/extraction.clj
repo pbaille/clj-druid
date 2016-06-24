@@ -37,6 +37,31 @@
    :function s/Str
    (s/optional-key :injective) s/Bool})
 
+(s/defschema lookupExtractionFunction
+  {:type (s/enum :lookup)
+   :lookup (s/conditional
+             #(= :map (:type %)) {:type (s/enum :map)
+                                  :map {s/Keyword s/Str}}
+             #(= :namespace (:type %)) {:type (s/enum :namespace)
+                                        :namespace s/Str})
+   (s/optional-key :replaceMissingValue) s/Bool
+   (s/optional-key :replaceMissingValueWith) s/Str
+   (s/optional-key :injective) s/Bool})
+
+(declare extractionFn)
+
+(s/defschema cascadeExtractionFunction
+  {:type (s/enum :cascade)
+   :extractionFns [extractionFn]})
+
+(s/defschema upperExtractionFunction
+  {:type (s/enum :upper)
+   (s/optional-key :locale) s/Str})
+
+(s/defschema lowerExtractionFunction
+  {:type (s/enum :lower)
+   (s/optional-key :locale) s/Str})
+
 (s/defschema extractionFn
   (s/conditional
    #(= :regex (:type %)) regularExpressionExtractionFunction
@@ -45,7 +70,11 @@
    #(= :substring (:type %)) substringExtractionFunction
    #(= :timeFormat (:type %)) timeFormatExtractionFunction
    #(= :time (:type %)) timeParsingExtractionFunction
-   #(= :javascript (:type %)) javascriptExtractionFunction))
+   #(= :javascript (:type %)) javascriptExtractionFunction
+   #(= :lookup (:type %)) lookupExtractionFunction
+   #(= :cascade (:type %)) cascadeExtractionFunction
+   #(= :upper (:type %)) upperExtractionFunction
+   #(= :lower (:type %)) lowerExtractionFunction))
 
 (s/defschema extraction
   {:type (s/enum :extraction)
